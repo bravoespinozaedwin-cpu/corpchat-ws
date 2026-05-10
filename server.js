@@ -7,12 +7,20 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 app.use(express.static("public"));
 let contadorUsuarios = 1;
+
+function horaActual() {
+  const ahora = new Date();
+  const hh = String(ahora.getHours()).padStart(2, "0");
+  const mm = String(ahora.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
 wss.on("connection", (ws) => {
   console.log("Nuevo usuario conectado");
   ws.send(
     JSON.stringify({
       tipo: "sistema",
-      mensaje: "Conectado correctamente al chat",
+      mensaje: `[${horaActual()}] Conectado correctamente al chat`,
     }),
   );
   // le ponemos un nombre temporal al usuario para identificarlo en avisos
@@ -22,7 +30,7 @@ wss.on("connection", (ws) => {
   broadcast(
     {
       tipo: "sistema",
-      mensaje: `${ws.nombreUsuario} se ha unido al chat`,
+      mensaje: `[${horaActual()}] ${ws.nombreUsuario} se ha unido al chat`,
     },
     ws,
   );
@@ -32,7 +40,7 @@ wss.on("connection", (ws) => {
     // avisamos a los que quedan que alguien salio
     broadcast({
       tipo: "sistema",
-      mensaje: `${ws.nombreUsuario} salió del chat`,
+      mensaje: `[${horaActual()}] ${ws.nombreUsuario} salió del chat`,
     });
   });
 });
