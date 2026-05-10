@@ -1,0 +1,9 @@
+/* public/style.css */
+
+.sistema {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-size: 0.9em;
+    margin: 6px 0;
+}
