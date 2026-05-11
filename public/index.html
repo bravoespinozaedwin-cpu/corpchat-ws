@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Chat Colaborativo</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
     <h2>Chat en tiempo real</h2>
 
-    <div id="chat" style="border:1px solid #ccc; height:300px; overflow-y:auto; padding:10px;"></div>
+    <!-- contenedor del historial visible de mensajes (HU-05) -->
+    <div id="chat"></div>
+
+    <!-- entrada para enviar mensajes (soporte HU-03) -->
+    <div id="formulario">
+        <input id="entrada" type="text" placeholder="Escribe un mensaje..." autocomplete="off" />
+        <button id="enviar">Enviar</button>
+    </div>
 
     <script src="client.js"></script>
 </body>
-
 </html>
