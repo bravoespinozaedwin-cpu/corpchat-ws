@@ -1,35 +1,64 @@
 // public/client.js
-
-// Conexión al servidor WebSocket
 const socket = new WebSocket("ws://localhost:3000");
 
-// Contenedor de mensajes
 const chatDiv = document.getElementById("chat");
+const entrada = document.getElementById("entrada");
+const botonEnviar = document.getElementById("enviar");
 
-// Cuando llega un mensaje desde el servidor
+// Pinta un mensaje de chat normal (HU-04 / HU-05)
+function pintarMensaje(data) {
+  const div = document.createElement("div");
+  div.classList.add("mensaje");
+  const hora = data.hora ? `[${data.hora}] ` : "";
+  div.textContent = `${hora}${data.user}: ${data.message}`;
+  chatDiv.appendChild(div);
+}
+
+// Pinta un mensaje del sistema (HU-06)
+function pintarSistema(texto) {
+  const div = document.createElement("div");
+  div.classList.add("sistema");
+  div.textContent = texto;
+  chatDiv.appendChild(div);
+}
+
+// Cuando llega un mensaje del servidor
 socket.onmessage = (event) => {
-  const mensajeElemento = document.createElement("div");
-
   try {
     const data = JSON.parse(event.data);
 
-    // si es notificacion del sistema la pintamos distinto - HU-06
-    if (data.tipo === "sistema") {
-      mensajeElemento.textContent = data.mensaje;
-      mensajeElemento.classList.add("sistema");
-    } else {
-      // mensaje normal de chat (lo manejara el resto del equipo)
-      mensajeElemento.textContent = `${data.user}: ${data.message}`;
+    if (data.tipo === "historial") {
+      // HU-05: pintamos todos los mensajes previos antes de los nuevos
+      data.mensajes.forEach(pintarMensaje);
+      // separador visual para distinguir lo viejo de lo nuevo
+      const sep = document.createElement("div");
+      sep.classList.add("separador");
+      sep.textContent = "— mensajes anteriores —";
+      chatDiv.appendChild(sep);
+    } else if (data.tipo === "sistema") {
+      pintarSistema(data.mensaje);
+    } else if (data.tipo === "mensaje") {
+      pintarMensaje(data);
     }
-  } catch (error) {
-    mensajeElemento.textContent = event.data;
+  } catch (e) {
+    console.error("Error al procesar mensaje:", e);
   }
 
-  chatDiv.appendChild(mensajeElemento);
+  // mantener el scroll abajo para ver lo más reciente
   chatDiv.scrollTop = chatDiv.scrollHeight;
 };
 
-// Mensaje de conexión (opcional, no afecta HU)
-socket.onopen = () => {
-  console.log("Conectado al WebSocket");
-};
+// Envío de mensaje (soporte HU-03, necesario para probar HU-05)
+function enviarMensaje() {
+  const texto = entrada.value.trim();
+  if (!texto) return;
+  socket.send(JSON.stringify({ message: texto }));
+  entrada.value = "";
+}
+
+botonEnviar.addEventListener("click", enviarMensaje);
+entrada.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") enviarMensaje();
+});
+
+socket.onopen = () => console.log("Conectado al WebSocket");
