@@ -1,54 +1,54 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const WebSocket = require('ws');
 
-const app = express();
-const server = http.createServer(app);
+const wss = new WebSocket.Server({ port: 3000 });
 
-const io = new Server(server);
+console.log('Servidor WebSocket iniciado');
 
-app.use(express.static('public'));
+wss.on('connection', (ws) => {
 
-io.on('connection', (socket) => {
+    console.log('Cliente conectado');
 
-    let usuario = socket.handshake.auth.usuario;
+    ws.on('message', (data) => {
 
-    if (!usuario || usuario.trim() === '') {
+        const mensaje = JSON.parse(data);
 
-        const numero = Math.floor(Math.random() * 1000);
-        usuario = `Usuario_${numero}`;
+        // Registro de usuario
+        if (mensaje.tipo === 'usuario') {
 
-    }
+            let nombre = mensaje.nombre;
 
-    socket.usuario = usuario;
+            if (!nombre || nombre.trim() === '') {
 
-    console.log(usuario + ' conectado');
+                const numero = Math.floor(Math.random() * 1000);
 
-    io.emit('mensaje', {
-        usuario: 'Sistema',
-        texto: `${usuario} se unió al chat`
+                nombre = `Usuario_${numero}`;
+
+            }
+
+            ws.usuario = nombre;
+
+            console.log('Usuario:', ws.usuario);
+
+        }
+
+        // Mensajes de chat
+        if (mensaje.tipo === 'mensaje') {
+
+            wss.clients.forEach((cliente) => {
+
+                if (cliente.readyState === WebSocket.OPEN) {
+
+                    cliente.send(JSON.stringify({
+                        usuario: ws.usuario,
+                        texto: mensaje.texto
+                    }));
+
+                }
+
+            });
+
+        }
+
     });
 
-    socket.on('mensaje', (msg) => {
-
-        io.emit('mensaje', {
-            usuario: usuario,
-            texto: msg
-        });
-
-    });
-
-    socket.on('disconnect', () => {
-
-        io.emit('mensaje', {
-            usuario: 'Sistema',
-            texto: `${usuario} salió del chat`
-        });
-
-    });
-
-});
-
-server.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000');
 });
