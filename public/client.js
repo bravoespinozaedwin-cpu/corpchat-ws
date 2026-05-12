@@ -1,4 +1,5 @@
-const socket = new WebSocket(`ws://${window.location.host}`);
+const protocolo = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${protocolo}://${window.location.host}`);
 
 const mensajes = document.getElementById("mensajes");
 const formulario = document.getElementById("formulario");
