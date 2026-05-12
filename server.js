@@ -8,16 +8,60 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.static("public"));
 
+const clientes = new Map();
+
+function generarUsuario() {
+  return "Usuario_" + Math.floor(Math.random() * 1000);
+}
+
+function enviarATodos(data) {
+  const mensaje = JSON.stringify(data);
+
+  wss.clients.forEach((cliente) => {
+    if (cliente.readyState === WebSocket.OPEN) {
+      cliente.send(mensaje);
+    }
+  });
+}
+
 wss.on("connection", (ws) => {
-  console.log("Nuevo usuario conectado");
+  const usuario = generarUsuario();
+  clientes.set(ws, usuario);
+
+  console.log(`${usuario} se conectó`);
 
   ws.send(JSON.stringify({
     tipo: "sistema",
-    mensaje: "Conectado correctamente al chat"
+    mensaje: `Te conectaste como ${usuario}`
   }));
 
+  enviarATodos({
+    tipo: "sistema",
+    mensaje: `${usuario} se unió al chat`
+  });
+
+  ws.on("message", (message) => {
+    const texto = message.toString().trim();
+
+    if (texto !== "") {
+      enviarATodos({
+        tipo: "mensaje",
+        usuario: usuario,
+        mensaje: texto,
+        hora: new Date().toLocaleTimeString()
+      });
+    }
+  });
+
   ws.on("close", () => {
-    console.log("Usuario desconectado");
+    console.log(`${usuario} se desconectó`);
+
+    clientes.delete(ws);
+
+    enviarATodos({
+      tipo: "sistema",
+      mensaje: `${usuario} salió del chat`
+    });
   });
 });
 

@@ -3,10 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <title>CorpChat WS</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>CorpChat WS</h1>
-  <p>Chat colaborativo en tiempo real con WebSocket</p>
+  <main class="chat-container">
+    <header>
+      <h1>CorpChat WS</h1>
+      <p>Chat colaborativo en tiempo real con WebSocket</p>
+    </header>
+
+    <section id="mensajes" class="mensajes"></section>
+
+    <form id="formulario" class="formulario">
+      <input 
+        type="text" 
+        id="mensajeInput" 
+        placeholder="Escribe un mensaje..." 
+        autocomplete="off"
+      >
+      <button type="submit">Enviar</button>
+    </form>
+  </main>
 
   <script src="client.js"></script>
 </body>
