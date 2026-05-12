@@ -1,9 +1,94 @@
-/* public/style.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.chat-container {
+  width: 420px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+header {
+  background: #111827;
+  color: white;
+  padding: 18px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+
+.mensajes {
+  height: 360px;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f9fafb;
+}
+
+.mensaje {
+  background: #e5e7eb;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+.mensaje strong {
+  color: #111827;
+}
 
 .sistema {
-    text-align: center;
-    color: #888;
-    font-style: italic;
-    font-size: 0.9em;
-    margin: 6px 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.hora {
+  font-size: 11px;
+  color: #6b7280;
+  margin-left: 6px;
+}
+
+.formulario {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+.formulario input {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.formulario button {
+  padding: 14px 18px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.formulario button:hover {
+  background: #1d4ed8;
 }

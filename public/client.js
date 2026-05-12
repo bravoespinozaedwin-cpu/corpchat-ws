@@ -1,35 +1,54 @@
-// public/client.js
-
-// Conexión al servidor WebSocket
 const socket = new WebSocket("ws://localhost:3000");
 
-// Contenedor de mensajes
-const chatDiv = document.getElementById("chat");
+const mensajes = document.getElementById("mensajes");
+const formulario = document.getElementById("formulario");
+const mensajeInput = document.getElementById("mensajeInput");
 
-// Cuando llega un mensaje desde el servidor
-socket.onmessage = (event) => {
-  const mensajeElemento = document.createElement("div");
+function agregarMensaje(data) {
+  const elemento = document.createElement("div");
 
-  try {
-    const data = JSON.parse(event.data);
-
-    // si es notificacion del sistema la pintamos distinto - HU-06
-    if (data.tipo === "sistema") {
-      mensajeElemento.textContent = data.mensaje;
-      mensajeElemento.classList.add("sistema");
-    } else {
-      // mensaje normal de chat (lo manejara el resto del equipo)
-      mensajeElemento.textContent = `${data.user}: ${data.message}`;
-    }
-  } catch (error) {
-    mensajeElemento.textContent = event.data;
+  if (data.tipo === "sistema") {
+    elemento.classList.add("sistema");
+    elemento.textContent = data.mensaje;
   }
 
-  chatDiv.appendChild(mensajeElemento);
-  chatDiv.scrollTop = chatDiv.scrollHeight;
-};
+  if (data.tipo === "mensaje") {
+    elemento.classList.add("mensaje");
+    elemento.innerHTML = `
+      <strong>${data.usuario}</strong>
+      <span class="hora">${data.hora}</span>
+      <br>
+      ${data.mensaje}
+    `;
+  }
 
-// Mensaje de conexión (opcional, no afecta HU)
-socket.onopen = () => {
-  console.log("Conectado al WebSocket");
-};
+  mensajes.appendChild(elemento);
+  mensajes.scrollTop = mensajes.scrollHeight;
+}
+
+socket.addEventListener("open", () => {
+  console.log("Conectado al servidor WebSocket");
+});
+
+socket.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+  agregarMensaje(data);
+});
+
+socket.addEventListener("close", () => {
+  agregarMensaje({
+    tipo: "sistema",
+    mensaje: "Conexión cerrada con el servidor"
+  });
+});
+
+formulario.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const texto = mensajeInput.value.trim();
+
+  if (texto !== "") {
+    socket.send(texto);
+    mensajeInput.value = "";
+  }
+});

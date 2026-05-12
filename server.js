@@ -1,54 +1,70 @@
-const WebSocket = require('ws');
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({ port: 3000 });
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-console.log('Servidor WebSocket iniciado');
+app.use(express.static("public"));
 
-wss.on('connection', (ws) => {
+const clientes = new Map();
 
-    console.log('Cliente conectado');
+function generarUsuario() {
+  return "Usuario_" + Math.floor(Math.random() * 1000);
+}
 
-    ws.on('message', (data) => {
+function enviarATodos(data) {
+  const mensaje = JSON.stringify(data);
 
-        const mensaje = JSON.parse(data);
+  wss.clients.forEach((cliente) => {
+    if (cliente.readyState === WebSocket.OPEN) {
+      cliente.send(mensaje);
+    }
+  });
+}
 
-        // Registro de usuario
-        if (mensaje.tipo === 'usuario') {
+wss.on("connection", (ws) => {
+  const usuario = generarUsuario();
+  clientes.set(ws, usuario);
 
-            let nombre = mensaje.nombre;
+  console.log(`${usuario} se conectó`);
 
-            if (!nombre || nombre.trim() === '') {
+  ws.send(JSON.stringify({
+    tipo: "sistema",
+    mensaje: `Te conectaste como ${usuario}`
+  }));
 
-                const numero = Math.floor(Math.random() * 1000);
+  enviarATodos({
+    tipo: "sistema",
+    mensaje: `${usuario} se unió al chat`
+  });
 
-                nombre = `Usuario_${numero}`;
+  ws.on("message", (message) => {
+    const texto = message.toString().trim();
 
-            }
+    if (texto !== "") {
+      enviarATodos({
+        tipo: "mensaje",
+        usuario: usuario,
+        mensaje: texto,
+        hora: new Date().toLocaleTimeString()
+      });
+    }
+  });
 
-            ws.usuario = nombre;
+  ws.on("close", () => {
+    console.log(`${usuario} se desconectó`);
 
-            console.log('Usuario:', ws.usuario);
+    clientes.delete(ws);
 
-        }
-
-        // Mensajes de chat
-        if (mensaje.tipo === 'mensaje') {
-
-            wss.clients.forEach((cliente) => {
-
-                if (cliente.readyState === WebSocket.OPEN) {
-
-                    cliente.send(JSON.stringify({
-                        usuario: ws.usuario,
-                        texto: mensaje.texto
-                    }));
-
-                }
-
-            });
-
-        }
-
+    enviarATodos({
+      tipo: "sistema",
+      mensaje: `${usuario} salió del chat`
     });
+  });
+});
 
+server.listen(3000, () => {
+  console.log("Servidor activo en http://localhost:3000");
 });
