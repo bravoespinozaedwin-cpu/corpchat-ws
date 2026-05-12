@@ -40,8 +40,28 @@ wss.on("connection", (ws) => {
     mensaje: `${usuario} se unió al chat`
   });
 
-  ws.on("message", (message) => {
-    const texto = message.toString().trim();
+ ws.on("message", (message) => {
+  const data = JSON.parse(message.toString());
+
+  if (data.tipo === "cambiar_nombre") {
+    const nombreAnterior = clientes.get(ws);
+    const nuevoNombre = data.nombre.trim();
+
+    if (nuevoNombre !== "") {
+      clientes.set(ws, nuevoNombre);
+
+      enviarATodos({
+        tipo: "sistema",
+        mensaje: `${nombreAnterior} ahora se llama ${nuevoNombre}`
+      });
+    }
+
+    return;
+  }
+
+  if (data.tipo === "mensaje") {
+    const usuario = clientes.get(ws);
+    const texto = data.mensaje.trim();
 
     if (texto !== "") {
       enviarATodos({
@@ -51,7 +71,8 @@ wss.on("connection", (ws) => {
         hora: new Date().toLocaleTimeString()
       });
     }
-  });
+  }
+});
 
   ws.on("close", () => {
     console.log(`${usuario} se desconectó`);

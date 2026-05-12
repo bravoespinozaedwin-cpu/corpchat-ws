@@ -92,3 +92,30 @@ header p {
 .formulario button:hover {
   background: #1d4ed8;
 }
+.nombre-box {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.nombre-box input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  outline: none;
+}
+
+.nombre-box button {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.nombre-box button:hover {
+  background: #059669;
+}

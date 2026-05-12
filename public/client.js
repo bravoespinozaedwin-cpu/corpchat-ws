@@ -1,8 +1,10 @@
-const socket = new WebSocket("ws://localhost:3000");
+const socket = new WebSocket(`ws://${window.location.host}`);
 
 const mensajes = document.getElementById("mensajes");
 const formulario = document.getElementById("formulario");
 const mensajeInput = document.getElementById("mensajeInput");
+const nombreInput = document.getElementById("nombreInput");
+const cambiarNombreBtn = document.getElementById("cambiarNombreBtn");
 
 function agregarMensaje(data) {
   const elemento = document.createElement("div");
@@ -48,7 +50,24 @@ formulario.addEventListener("submit", (event) => {
   const texto = mensajeInput.value.trim();
 
   if (texto !== "") {
-    socket.send(texto);
+    socket.send(JSON.stringify({
+      tipo: "mensaje",
+      mensaje: texto
+    }));
+
     mensajeInput.value = "";
+  }
+});
+
+cambiarNombreBtn.addEventListener("click", () => {
+  const nuevoNombre = nombreInput.value.trim();
+
+  if (nuevoNombre !== "") {
+    socket.send(JSON.stringify({
+      tipo: "cambiar_nombre",
+      nombre: nuevoNombre
+    }));
+
+    nombreInput.value = "";
   }
 });
