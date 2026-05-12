@@ -16,11 +16,13 @@ CorpChat WS permite la comunicación simultánea entre varios usuarios conectado
 - JavaScript
 - Git y GitHub
 - Notion para gestión Scrum
+- ngrok
 
 ## Funcionalidades
 
 - Conexión automática al chat.
 - Asignación automática de nombre temporal tipo Usuario_123.
+- cambiar nombre
 - Envío de mensajes en tiempo real.
 - Recepción instantánea de mensajes.
 - Historial visible de mensajes.
@@ -46,3 +48,12 @@ Clonar el repositorio:
 
 ```bash
 git clone https://github.com/bravoespinozaedwin-cpu/corpchat-ws.git
+
+instalar ngrok
+
+## comandos para iniciar
+en terminal de ngrok
+ngrok http 3000  /para poder entrar desde distintos dispositivos
+
+en el develop git bash
+ node server.js //
