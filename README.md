@@ -26,6 +26,19 @@ CorpChat WS permite la comunicación simultánea entre varios usuarios conectado
 - Historial visible de mensajes.
 - Notificación cuando un usuario entra al chat.
 - Notificación cuando un usuario sale del chat.
+## Alcance del prototipo
+
+Este proyecto implementa una funcionalidad básica de chat colaborativo en tiempo real mediante WebSocket. No incluye autenticación IAM ni base de datos, ya que el alcance de esta actividad se enfoca en la comunicación bidireccional persistente entre cliente y servidor.
+
+Como mejora adicional, el sistema permite cambiar el nombre temporal asignado automáticamente y puede ser expuesto mediante ngrok para pruebas desde distintos dispositivos.
+## Pruebas realizadas
+
+- Prueba con múltiples pestañas del navegador.
+- Prueba de envío y recepción de mensajes en tiempo real.
+- Prueba de asignación automática de usuario temporal.
+- Prueba de cambio opcional de nombre.
+- Prueba de notificación de ingreso y salida de usuarios.
+- Prueba de acceso remoto mediante ngrok.
 
 ## Instalación
 
